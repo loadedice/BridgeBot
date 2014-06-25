@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	"github.com/organ/golibtox"
@@ -24,6 +25,7 @@ type IrcServer struct {
 
 var ircMessage string
 var toxMessage string
+var toxGroupNum int32
 
 func main() {
 	Tserver := &ToxServer{"37.187.46.132", 33445, "A9D98212B3F972BD11DA52BEB0658C326FCCC1BFD49F347F9C2D3D8B61E1B927"}
@@ -38,6 +40,7 @@ func main() {
 	if err != nil {
 		fmt.Println("Could not load save data!")
 	}
+	bridgebot.SetStatusMessage([]byte("Invite me to one groupchat!")) //currently only works with one groupchat, i'll get on to making it work with multiple
 	bridgebot.SetName("BridgeBot")
 	// irc connecting
 	con := irc.IRC("BridgeBot", "BridgeBot")
@@ -52,8 +55,6 @@ func main() {
 	bridgebot.CallbackFriendMessage(onFriendMessage)
 	bridgebot.CallbackGroupInvite(onGroupInvite)
 	bridgebot.CallbackGroupMessage(onGroupMessage)
-
-	bridgebot.SetStatusMessage([]byte("Invite me to one groupchat!"))
 
 	con.AddCallback("001", func(e *irc.Event) {
 		con.Join(Iserver.Channel)
@@ -118,8 +119,12 @@ func onGroupInvite(t *golibtox.Tox, friendnumber int32, groupPublicKey []byte) {
 }
 
 func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, message []byte, length uint16) {
-	fmt.Printf("[%s]:%s\n", "message", string(message))
-	toxMessage = string(message)
+	fmt.Printf("[Groupchat #%d]:%s\n", groupnumber, string(message))
+	if strings.HasPrefix(string(message), "!") {
+		toxMessage = string(message)
+		return
+	}
+	toxMessage = ""
 }
 
 func loadData(t *golibtox.Tox) error {
@@ -142,5 +147,9 @@ func saveData(t *golibtox.Tox) error {
 
 //irc functions
 func onIrcMessage(e *irc.Event) {
+	if e.Nick == "BridgeBot" { //I'll unhardcode this once I get around to making the config files
+		ircMessage = ""
+		return
+	}
 	ircMessage = e.Message
 }
