@@ -32,13 +32,10 @@ type IrcServer struct {
 var ircMessage string
 var toxMessage string
 var toxGroupNum int32 //doesn't do anything yet. Will eventually support multiple groups at once!
-var config Config
+var cfg Config
 
 func main() {
-	Tserver := &ToxServer{"37.187.46.132", 33445, "5EB67C51D3FF5A9D528D242B669036ED2A30F8A60E674C45E7D43010CB2E1331"}
-	Iserver := &IrcServer{"irc.freenode.net:6667", "#some-test44554"}
-
-	if _, err := toml.DecodeFile("config", &config); err != nil {
+	if _, err := toml.DecodeFile("config", &cfg); err != nil {
 		panic(err)
 	}
 	//tox connecting
@@ -55,7 +52,7 @@ func main() {
 	bridgebot.SetName("BridgeBot")
 	// irc connecting
 	con := irc.IRC("BridgeBot", "BridgeBot")
-	err = con.Connect(Iserver.Address)
+	err = con.Connect(cfg.IRC.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -68,10 +65,10 @@ func main() {
 	bridgebot.CallbackGroupMessage(onGroupMessage)
 
 	con.AddCallback("001", func(e *irc.Event) {
-		con.Join(Iserver.Channel)
+		con.Join(cfg.IRC.Channel)
 	})
 	con.AddCallback("PRIVMSG", onIrcMessage)
-	err = bridgebot.BootstrapFromAddress(Tserver.Address, Tserver.Port, Tserver.PublicKey)
+	err = bridgebot.BootstrapFromAddress(cfg.Tox.Address, cfg.Tox.Port, cfg.Tox.PublicKey)
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +97,7 @@ func main() {
 				ircMessage = ""
 			}
 			if len(toxMessage) > 0 {
-				con.Privmsg(Iserver.Channel, toxMessage)
+				con.Privmsg(cfg.IRC.Channel, toxMessage)
 				toxMessage = ""
 			}
 			bridgebot.Do()

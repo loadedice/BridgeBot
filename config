@@ -1,12 +1,13 @@
 [IRC]
 # IRC settings go here, pretty self explanatory
-Address = "irc.feenode.net"
-Port = "6667"
-Channel = "#whatever"
+Address = "irc.feenode.net:6667"
+Channel = "#some-test44554"
 
 [Tox]
 #Tox node settings, refer to https://wiki.tox.im/Nodes for more info
-Address = "37.187.46.132"
+Address = "37.187.46.132" #called IPv4 on the wiki, or IPv6. IPv6 is untested, because I don't have it.
+Port = 33445
+PublicKey = "5EB67C51D3FF5A9D528D242B669036ED2A30F8A60E674C45E7D43010CB2E1331" #Called client id on the wiki
 
 ###Not yet implemented.
 ###[settings]
