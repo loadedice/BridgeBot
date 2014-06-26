@@ -1,0 +1,14 @@
+[IRC]
+# IRC settings go here, pretty self explanatory
+Address = "irc.feenode.net"
+Port = "6667"
+Channel = "#whatever"
+
+[Tox]
+#Tox node settings, refer to https://wiki.tox.im/Nodes for more info
+Address = "37.187.46.132"
+
+###Not yet implemented.
+###[settings]
+###regex = "(^\!.*?$|^\@.*?$)" #regex to match if the message from tox should be sent over.
+
