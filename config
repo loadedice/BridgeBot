@@ -1,6 +1,6 @@
 [IRC]
 # IRC settings go here, pretty self explanatory
-Address = "irc.feenode.net:6667"
+Address = "irc.freenode.net:6667"
 Channel = "#some-test44554"
 
 [Tox]
