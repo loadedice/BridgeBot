@@ -9,9 +9,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/organ/golibtox"
 	"github.com/thoj/go-ircevent"
 )
+
+type Config struct {
+	IRC IrcServer
+	Tox ToxServer
+}
 
 type ToxServer struct {
 	Address   string
@@ -25,12 +31,16 @@ type IrcServer struct {
 
 var ircMessage string
 var toxMessage string
-var toxGroupNum int32
+var toxGroupNum int32 //doesn't do anything yet. Will eventually support multiple groups at once!
+var config Config
 
 func main() {
-	Tserver := &ToxServer{"37.187.46.132", 33445, "A9D98212B3F972BD11DA52BEB0658C326FCCC1BFD49F347F9C2D3D8B61E1B927"}
+	Tserver := &ToxServer{"37.187.46.132", 33445, "5EB67C51D3FF5A9D528D242B669036ED2A30F8A60E674C45E7D43010CB2E1331"}
 	Iserver := &IrcServer{"irc.freenode.net:6667", "#some-test44554"}
 
+	if _, err := toml.DecodeFile("config", &config); err != nil {
+		panic(err)
+	}
 	//tox connecting
 	bridgebot, err := golibtox.New()
 	if err != nil {
@@ -40,6 +50,7 @@ func main() {
 	if err != nil {
 		fmt.Println("Could not load save data!")
 	}
+
 	bridgebot.SetStatusMessage([]byte("Invite me to one groupchat!")) //currently only works with one groupchat, i'll get on to making it work with multiple
 	bridgebot.SetName("BridgeBot")
 	// irc connecting
@@ -71,7 +82,7 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 	ticker := time.NewTicker(25 * time.Millisecond)
 
-	go con.Loop() //there has to be a better way to do this...
+	go con.Loop()
 	for isRunning {
 		select {
 		case <-c:
