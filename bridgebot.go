@@ -36,11 +36,12 @@ type Settings struct {
 var ircMessage string
 var toxMessage string
 var toxGroupNum int
+
+//Once everything else works, I plan on changing the above to slices. As now messages may get overridden.
+
 var cfg Config
-var vaildMessage *regexp.Regexp
 
 func main() {
-	vaildMessage = regexp.MustCompile(cfg.Settings.Regex)
 	if _, err := toml.DecodeFile("config", &cfg); err != nil {
 		panic(err)
 	}
@@ -54,7 +55,7 @@ func main() {
 		fmt.Println("Could not load save data!")
 	}
 
-	bridgebot.SetStatusMessage([]byte("Invite me to one groupchat!")) //currently only works with one groupchat, i'll get on to making it work with multiple
+	bridgebot.SetStatusMessage([]byte("Invite me to a groupchat!"))
 	bridgebot.SetName("BridgeBot")
 	// irc connecting
 	con := irc.IRC("BridgeBot", "BridgeBot")
@@ -130,16 +131,22 @@ func onGroupInvite(t *golibtox.Tox, friendnumber int32, groupPublicKey []byte) {
 	friend, _ := t.GetName(friendnumber)
 	fmt.Printf("[%s] Group invite from %s\n", name, friend)
 	t.JoinGroupchat(friendnumber, groupPublicKey)
+	fmt.Printf("%s", cfg.Settings.Regex)
 }
 
 func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, message []byte, length uint16) {
+	//TODO: Check if the message is from the bot! This causes the response to be echoed in the IRC
 	fmt.Printf("[Groupchat #%d]:%s\n", groupnumber, string(message))
-	if vaildMessage.Match(message) {
+	validMessage, err := regexp.Match(cfg.Settings.Regex, message)
+	if err != nil {
+		panic(err)
+	}
+	if validMessage {
 		toxMessage = string(message)
 		toxGroupNum = groupnumber
-		return
+	} else {
+		toxMessage = ""
 	}
-	toxMessage = ""
 }
 
 func loadData(t *golibtox.Tox) error {
