@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
-	"strings"
+	"regexp"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -15,8 +15,9 @@ import (
 )
 
 type Config struct {
-	IRC IrcServer
-	Tox ToxServer
+	IRC      IrcServer
+	Tox      ToxServer
+	Settings Settings
 }
 
 type ToxServer struct {
@@ -28,13 +29,18 @@ type IrcServer struct {
 	Address string
 	Channel string
 }
+type Settings struct {
+	Regex string
+}
 
 var ircMessage string
 var toxMessage string
-var toxGroupNum int32 //doesn't do anything yet. Will eventually support multiple groups at once!
+var toxGroupNum int32
 var cfg Config
+var vaildMessage *regexp.Regexp
 
 func main() {
+	vaildMessage = regexp.MustCompile(cfg.Settings.Regex)
 	if _, err := toml.DecodeFile("config", &cfg); err != nil {
 		panic(err)
 	}
@@ -128,7 +134,7 @@ func onGroupInvite(t *golibtox.Tox, friendnumber int32, groupPublicKey []byte) {
 
 func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, message []byte, length uint16) {
 	fmt.Printf("[Groupchat #%d]:%s\n", groupnumber, string(message))
-	if strings.HasPrefix(string(message), "!") {
+	if vaildMessage.Match(message) {
 		toxMessage = string(message)
 		return
 	}
