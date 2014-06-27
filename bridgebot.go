@@ -35,7 +35,7 @@ type Settings struct {
 
 var ircMessage string
 var toxMessage string
-var toxGroupNum int32
+var toxGroupNum int
 var cfg Config
 var vaildMessage *regexp.Regexp
 
@@ -99,7 +99,7 @@ func main() {
 			isRunning = false
 		case <-ticker.C:
 			if len(ircMessage) > 0 {
-				bridgebot.GroupMessageSend(0, []byte(ircMessage))
+				bridgebot.GroupMessageSend(toxGroupNum, []byte(ircMessage))
 				ircMessage = ""
 			}
 			if len(toxMessage) > 0 {
@@ -136,6 +136,7 @@ func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, mes
 	fmt.Printf("[Groupchat #%d]:%s\n", groupnumber, string(message))
 	if vaildMessage.Match(message) {
 		toxMessage = string(message)
+		toxGroupNum = groupnumber
 		return
 	}
 	toxMessage = ""
