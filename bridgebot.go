@@ -131,17 +131,19 @@ func onGroupInvite(t *golibtox.Tox, friendnumber int32, groupPublicKey []byte) {
 	friend, _ := t.GetName(friendnumber)
 	fmt.Printf("[%s] Group invite from %s\n", name, friend)
 	t.JoinGroupchat(friendnumber, groupPublicKey)
-	fmt.Printf("%s", cfg.Settings.Regex)
 }
 
 func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, message []byte, length uint16) {
-	//TODO: Check if the message is from the bot! This causes the response to be echoed in the IRC
-	fmt.Printf("[Groupchat #%d]:%s\n", groupnumber, string(message))
+	name, err := t.GroupPeername(groupnumber, friendgroupnumber)
+	if err != nil {
+		name = []byte("Unknown")
+	}
+	fmt.Printf("[Groupchat #%d, %s]:%s\n", groupnumber, string(name), (string(message)))
 	validMessage, err := regexp.Match(cfg.Settings.Regex, message)
 	if err != nil {
 		panic(err)
 	}
-	if validMessage {
+	if validMessage && string(name) != "BridgeBot" {
 		toxMessage = string(message)
 		toxGroupNum = groupnumber
 	} else {
