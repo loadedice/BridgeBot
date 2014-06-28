@@ -15,21 +15,22 @@ import (
 )
 
 type Config struct {
-	IRC      IrcServer
-	Tox      ToxServer
+	IRC      IrcConf
+	Tox      ToxConf
 	Settings Settings
 }
 
-type ToxServer struct {
+type ToxConf struct {
 	Address   string
 	Port      uint16
 	PublicKey string
 }
-type IrcServer struct {
+type IrcConf struct {
 	Address string
 	Channel string
 }
 type Settings struct {
+	Nick  string
 	Regex string
 }
 
@@ -56,15 +57,15 @@ func main() {
 	}
 
 	bridgebot.SetStatusMessage([]byte("Invite me to a groupchat!"))
-	bridgebot.SetName("BridgeBot")
+	bridgebot.SetName(cfg.Settings.Nick)
 	// irc connecting
-	con := irc.IRC("BridgeBot", "BridgeBot")
+	con := irc.IRC(cfg.Settings.Nick, cfg.Settings.Nick)
 	err = con.Connect(cfg.IRC.Address)
 	if err != nil {
 		panic(err)
 	}
 	bridgebotAddr, _ := bridgebot.GetAddress()
-	fmt.Println("ID bridgebot: ", hex.EncodeToString(bridgebotAddr))
+	fmt.Println("ID %s:  %s", cfg.Settings.Nick, hex.EncodeToString(bridgebotAddr))
 
 	bridgebot.CallbackFriendRequest(onFriendRequest)
 	bridgebot.CallbackFriendMessage(onFriendMessage)
@@ -143,7 +144,7 @@ func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, mes
 	if err != nil {
 		panic(err)
 	}
-	if validMessage && string(name) != "BridgeBot" {
+	if validMessage && string(name) != cfg.Settings.Nick {
 		toxMessage = string(message)
 		toxGroupNum = groupnumber
 	} else {
@@ -171,7 +172,7 @@ func saveData(t *golibtox.Tox) error {
 
 //irc functions
 func onIrcMessage(e *irc.Event) {
-	if e.Nick == "BridgeBot" { //I'll unhardcode this once I get around to making the config files
+	if e.Nick == cfg.Settings.Nick {
 		ircMessage = ""
 		return
 	}

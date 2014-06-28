@@ -11,4 +11,4 @@ PublicKey = "5EB67C51D3FF5A9D528D242B669036ED2A30F8A60E674C45E7D43010CB2E1331" #
 
 [Settings]
 Regex = "(^!.*?$|^@.*?$)" #regex to match if the message from tox should be sent over.
-#More settings to come
+Nick = "BridgeBot"
