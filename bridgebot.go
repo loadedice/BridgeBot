@@ -36,9 +36,7 @@ type Settings struct {
 
 var ircMessage string
 var toxMessage string
-var toxGroupNum int
-
-//Once everything else works, I plan on changing the above to slices. As now messages may get overridden.
+var toxGroupNum []int
 
 var cfg Config
 
@@ -100,11 +98,14 @@ func main() {
 			bridgebot.Kill()
 			isRunning = false
 		case <-ticker.C:
-			if len(ircMessage) > 0 {
-				bridgebot.GroupMessageSend(toxGroupNum, []byte(ircMessage))
-				ircMessage = ""
+			if len(ircMessage) > 0 { //TO tox FROM irc
+				for i := range toxGroupNum {
+					bridgebot.GroupMessageSend(toxGroupNum[i], []byte(ircMessage))
+					ircMessage = ""
+				}
+				toxGroupNum = toxGroupNum[:0]
 			}
-			if len(toxMessage) > 0 {
+			if len(toxMessage) > 0 { //TO irc FROM tox
 				con.Privmsg(cfg.IRC.Channel, toxMessage)
 				toxMessage = ""
 			}
@@ -146,7 +147,7 @@ func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, mes
 	}
 	if validMessage && string(name) != cfg.Settings.Nick {
 		toxMessage = string(message)
-		toxGroupNum = groupnumber
+		toxGroupNum = append(toxGroupNum, groupnumber)
 	} else {
 		toxMessage = ""
 	}
