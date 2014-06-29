@@ -130,7 +130,7 @@ func onFriendMessage(t *golibtox.Tox, friendnumber int32, message []byte, length
 func onGroupInvite(t *golibtox.Tox, friendnumber int32, groupPublicKey []byte) {
 	name, _ := t.GetSelfName()
 	friend, _ := t.GetName(friendnumber)
-	fmt.Printf("[%s] Group invite from %s\n", name, friend)
+	fmt.Printf("[%s] Group invite from %s accepted\n", name, friend)
 	t.JoinGroupchat(friendnumber, groupPublicKey)
 }
 
@@ -177,4 +177,5 @@ func onIrcMessage(e *irc.Event) {
 		return
 	}
 	ircMessage = e.Message
+
 }
