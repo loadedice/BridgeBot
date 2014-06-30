@@ -38,8 +38,6 @@ var ircMessage string
 var toxMessage string
 var toxGroupNum int
 
-//Once everything else works, I plan on changing the above to slices. As now messages may get overridden.
-
 var cfg Config
 
 func main() {
