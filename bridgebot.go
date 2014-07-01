@@ -68,7 +68,7 @@ func main() {
 		con.Privmsg("NickServ", "IDENTIFY "+cfg.IRC.Password)
 	}
 	bridgebotAddr, _ := bridgebot.GetAddress()
-	fmt.Println("ID %s:  %s", cfg.Settings.Nick, hex.EncodeToString(bridgebotAddr))
+	fmt.Printf("ID %s:  %s\n", cfg.Settings.Nick, hex.EncodeToString(bridgebotAddr))
 
 	bridgebot.CallbackFriendRequest(onFriendRequest)
 	bridgebot.CallbackFriendMessage(onFriendMessage)
