@@ -26,8 +26,9 @@ type ToxConf struct {
 	PublicKey string
 }
 type IrcConf struct {
-	Address string
-	Channel string
+	Address  string
+	Channel  string
+	Password string
 }
 type Settings struct {
 	Nick  string
@@ -61,6 +62,10 @@ func main() {
 	err = con.Connect(cfg.IRC.Address)
 	if err != nil {
 		panic(err)
+	}
+	//authing bot with nickserv
+	if cfg.IRC.Password != "" {
+		con.Privmsg("NickServ", "IDENTIFY "+cfg.IRC.Password)
 	}
 	bridgebotAddr, _ := bridgebot.GetAddress()
 	fmt.Println("ID %s:  %s", cfg.Settings.Nick, hex.EncodeToString(bridgebotAddr))

@@ -2,6 +2,8 @@
 # IRC settings go here, pretty self explanatory
 Address = "irc.freenode.net:6667"
 Channel = "#bridgebot"
+Password = ""
+#Leave blank for no password
 
 [Tox]
 #Tox node settings, refer to https://wiki.tox.im/Nodes for more info
