@@ -52,11 +52,11 @@ func main() {
 	}
 	err = loadData(bridgebot)
 	if err != nil {
+		bridgebot.SetName(cfg.Settings.Nick)
 		fmt.Println("Could not load save data!")
 	}
 
 	bridgebot.SetStatusMessage([]byte("Invite me to a groupchat!"))
-	bridgebot.SetName(cfg.Settings.Nick)
 	// irc connecting
 	con := irc.IRC(cfg.Settings.Nick, cfg.Settings.Nick)
 	err = con.Connect(cfg.IRC.Address)
