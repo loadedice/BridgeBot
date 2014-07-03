@@ -31,8 +31,9 @@ type IrcConf struct {
 	Password string
 }
 type Settings struct {
-	Nick  string
-	Regex string
+	Nick        string
+	Regex       string
+	SyncBotMode bool
 }
 
 var ircMessage string
@@ -139,7 +140,7 @@ func onGroupInvite(t *golibtox.Tox, friendnumber int32, groupPublicKey []byte) {
 
 func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, message []byte, length uint16) {
 	name, err := t.GroupPeername(groupnumber, friendgroupnumber)
-	if err != nil {
+	if err != nil || name == nil {
 		name = []byte("Unknown")
 	}
 	fmt.Printf("[Groupchat #%d, %s]:%s\n", groupnumber, string(name), (string(message)))
@@ -149,6 +150,9 @@ func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, mes
 	}
 	if validMessage && string(name) != cfg.Settings.Nick {
 		toxMessage = string(message)
+		if cfg.Settings.SyncBotMode {
+			toxMessage = fmt.Sprintf("[%s]: %s", string(name), toxMessage)
+		}
 		toxGroupNum = groupnumber
 	} else {
 		toxMessage = ""
@@ -180,5 +184,9 @@ func onIrcMessage(e *irc.Event) {
 		return
 	}
 	ircMessage = e.Message
+
+	if cfg.Settings.SyncBotMode {
+		ircMessage = fmt.Sprintf("[%s]: %s", e.Nick, ircMessage)
+	}
 
 }
