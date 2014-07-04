@@ -34,6 +34,7 @@ type Settings struct {
 	Nick        string
 	Regex       string
 	SyncBotMode bool
+	SaveFile    string
 }
 
 var ircMessage string
@@ -160,7 +161,7 @@ func onGroupMessage(t *golibtox.Tox, groupnumber int, friendgroupnumber int, mes
 }
 
 func loadData(t *golibtox.Tox) error {
-	data, err := ioutil.ReadFile("bridge_data")
+	data, err := ioutil.ReadFile(cfg.Settings.SaveFile)
 	if err != nil {
 		return err
 	}
@@ -173,7 +174,7 @@ func saveData(t *golibtox.Tox) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile("bridge_data", data, 0644)
+	err = ioutil.WriteFile(cfg.Settings.SaveFile, data, 0644)
 	return err
 }
 

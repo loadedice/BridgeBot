@@ -16,3 +16,4 @@ Regex = "(^!.*?$|^@.*?$)" #regex to match if the message from tox should be sent
 Nick = "BridgeBot"
 SyncBotMode = false
 #Syncbot mode sends the names accross like Syncbot does. You may also want to change the regex above to allow all messages but the mode itself doesn't reset it.
+SaveFile = "bridge_data"
