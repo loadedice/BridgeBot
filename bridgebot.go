@@ -184,7 +184,7 @@ func onIrcMessage(e *irc.Event) {
 		ircMessage = ""
 		return
 	}
-	ircMessage = string(e.Message)
+	ircMessage = e.Message()
 
 	if cfg.Settings.SyncBotMode {
 		ircMessage = fmt.Sprintf("[%s]: %s", e.Nick, ircMessage)
