@@ -180,7 +180,7 @@ func saveData(t *golibtox.Tox) error {
 
 //irc functions
 func onIrcMessage(e *irc.Event) {
-	if e.Nick == cfg.Settings.Nick {
+	if e.Nick == cfg.Settings.Nick || e.Arguments[0] != cfg.IRC.Channel {
 		ircMessage = ""
 		return
 	}
